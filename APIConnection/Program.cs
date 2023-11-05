@@ -3,7 +3,7 @@ using APIConnection.Model;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-string ConnectionString = ""; //@"Server=localhost\SQLEXPRESS;Initial Catalog=MAUI_Db;MultipleActiveResultSets=true;User ID=DESKTOP-AAMVKH7\zakir;Password=;Integrated Security = True";
+string ConnectionString = ""; //@"Server=localhost\SQLEXPRESS;Initial Catalog=MAUI_Db;MultipleActiveResultSets=true;User ID=xxx;Password=xxx;Integrated Security = True";
 builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(ConnectionString));
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
@@ -17,6 +17,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapGet("/test", () =>
+{
+    return "test";
+});
+
+
 app.MapPost("/ConnectionBuild", (ConnectionModel connectionProperties) =>
 {
         ConnectionString = $"Server={connectionProperties.ServerName};Initial Catalog={connectionProperties.Catalog};User Id={connectionProperties.Username};Password={connectionProperties.Password};Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security = True";
@@ -29,7 +35,15 @@ app.MapPost("/ConnectionBuild", (ConnectionModel connectionProperties) =>
 
 app.MapGet("/Departments", async (ApplicationDbContext db) =>
 {
-  return await db.Departments.ToListAsync();
+    try
+    {
+        return await db.Departments.ToListAsync();
+    }
+    catch (Exception)
+    {
+        throw;
+    }
+    
 })
 .WithName("GetDepartments");
 
